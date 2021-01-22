@@ -1,0 +1,7 @@
+domain: monitoring.io
+repo: github.com/linclaus/grafana-operator
+resources:
+- group: grafana
+  kind: GrafanaDashboard
+  version: v1
+version: "2"
