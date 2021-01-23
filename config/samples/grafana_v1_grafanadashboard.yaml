@@ -6,6 +6,7 @@ spec:
 spec:
   folder: GrafanaTest
   title: sh600198:大唐电信
+  editable: true
   rows:
   - name: Overview
     repeat: ""

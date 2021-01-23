@@ -73,7 +73,7 @@ func (grafana *Grafana) UpsertDashboard(gd *grafanav1.GrafanaDashboard) error {
 	}
 	board := &gografana.Board{
 		Title:    gd.Spec.Title,
-		Editable: true,
+		Editable: gd.Spec.Editable,
 		Rows:     rows,
 	}
 	return grafana.internalCreateDashboard(folderId, board)
