@@ -28,17 +28,42 @@ type GrafanaDashboardSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of GrafanaDashboard. Edit GrafanaDashboard_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Folder   string         `json:"folder,omitempty"`
+	Title    string         `json:"title,omitempty"`
+	Editable bool           `json:"editable,omitempty"`
+	Rows     []DashboardRow `json:"rows,omitempty"`
+}
+
+type DashboardRow struct {
+	Name   string           `json:"name,omitempty"`
+	Repeat string           `json:"repeat,omitempty"`
+	Panels []DashboardPanel `json:"panels,omitempty"`
+}
+
+type DashboardPanel struct {
+	Title      string             `json:"title,omitempty"`
+	Type       string             `json:"type,omitempty"`
+	Datasource string             `json:"datasource,omitempty"`
+	Targets    []PrometheusTarget `json:"targets,omitempty"`
+}
+
+type PrometheusTarget struct {
+	Query  string `json:"query,omitempty"`
+	Legend string `json:"legend,omitempty"`
+	Ref    string `json:"ref,omitempty"`
+	Hidden bool   `json:"hidden,omitempty"`
 }
 
 // GrafanaDashboardStatus defines the observed state of GrafanaDashboard
 type GrafanaDashboardStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	Status     string `json:"status,omitempty"`
+	RetryTimes int    `json:"retryTimes,omitempt"`
 }
 
 // +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
 
 // GrafanaDashboard is the Schema for the grafanadashboards API
 type GrafanaDashboard struct {

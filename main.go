@@ -18,6 +18,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 
 	"k8s.io/apimachinery/pkg/runtime"
@@ -28,12 +29,15 @@ import (
 
 	grafanav1 "github.com/linclaus/grafana-operator/api/v1"
 	"github.com/linclaus/grafana-operator/controllers"
+	"github.com/linclaus/grafana-operator/pkg/grafana"
+	"github.com/spf13/viper"
 	// +kubebuilder:scaffold:imports
 )
 
 var (
 	scheme   = runtime.NewScheme()
 	setupLog = ctrl.Log.WithName("setup")
+	cfgFile  string
 )
 
 func init() {
@@ -46,11 +50,13 @@ func init() {
 func main() {
 	var metricsAddr string
 	var enableLeaderElection bool
+	flag.StringVar(&cfgFile, "file", "", "The config file.")
 	flag.StringVar(&metricsAddr, "metrics-addr", ":8080", "The address the metric endpoint binds to.")
 	flag.BoolVar(&enableLeaderElection, "enable-leader-election", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
 	flag.Parse()
+	initConfig()
 
 	ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
 
@@ -66,10 +72,16 @@ func main() {
 		os.Exit(1)
 	}
 
+	grafana, err := grafana.NewGrafana(viper.GetString("version"), viper.GetString("host"), viper.GetString("adminUser"), viper.GetString("adminPass"), viper.GetString("token"))
+	if err != nil {
+		setupLog.Error(err, "create grafana failed")
+		os.Exit(1)
+	}
 	if err = (&controllers.GrafanaDashboardReconciler{
-		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("controllers").WithName("GrafanaDashboard"),
-		Scheme: mgr.GetScheme(),
+		Client:  mgr.GetClient(),
+		Log:     ctrl.Log.WithName("controllers").WithName("GrafanaDashboard"),
+		Scheme:  mgr.GetScheme(),
+		Grafana: *grafana,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "GrafanaDashboard")
 		os.Exit(1)
@@ -80,5 +92,24 @@ func main() {
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
+	}
+}
+
+// initConfig reads in config file and ENV variables if set.
+func initConfig() {
+	if cfgFile != "" {
+		// Use config file from the flag.
+		viper.SetConfigFile(cfgFile)
+	} else {
+		viper.AddConfigPath("./")
+		viper.AddConfigPath("/etc/")
+		viper.SetConfigName("config")
+	}
+
+	viper.AutomaticEnv() // read in environment variables that match
+
+	// If a config file is found, read it in.
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
 }
