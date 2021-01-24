@@ -67,7 +67,7 @@ func (grafana *Grafana) UpsertDashboard(gd *grafanav1.GrafanaDashboard) error {
 		row := &gografana.Row{Panels: []gografana.Panel_5_0{}}
 		row.Title = r.Name
 		for i, p := range r.Panels {
-			row.Panels = append(row.Panels, pannelFactory(i+1, p.Title, p.Targets[0].Query, p.Type, p.Datasource))
+			row.Panels = append(row.Panels, pannelFactory(i+1, p.Title, p.Targets[0].Query, p.Targets[0].Legend, p.Targets[0].Ref, p.Type, p.Datasource))
 		}
 		rows = append(rows, row)
 	}
@@ -79,7 +79,7 @@ func (grafana *Grafana) UpsertDashboard(gd *grafanav1.GrafanaDashboard) error {
 	return grafana.internalCreateDashboard(folderId, board)
 }
 
-func pannelFactory(panelId int, title, exp, pannelType, dataSourceName string) gografana.Panel_5_0 {
+func pannelFactory(panelId int, title, exp, legendFormat, refId, pannelType, dataSourceName string) gografana.Panel_5_0 {
 	var panel gografana.Panel_5_0
 	if pannelType == "graph" {
 		panel = gografana.Panel_5_0{
@@ -119,9 +119,9 @@ func pannelFactory(panelId int, title, exp, pannelType, dataSourceName string) g
 				{
 					Expr:           exp,
 					Format:         "time_series",
-					LegendFormat:   "{{code}}: {{name}}",
+					LegendFormat:   legendFormat,
 					Instant:        false,
-					RefID:          "A",
+					RefID:          refId,
 					IntervalFactor: 1,
 				},
 			},
@@ -172,8 +172,8 @@ func pannelFactory(panelId int, title, exp, pannelType, dataSourceName string) g
 				{
 					Expr:         exp,
 					Format:       "time_series",
-					LegendFormat: "{{code}}: {{name}}",
-					RefID:        "A",
+					LegendFormat: legendFormat,
+					RefID:        refId,
 				},
 			},
 			FieldConfig: struct {
@@ -238,8 +238,8 @@ func pannelFactory(panelId int, title, exp, pannelType, dataSourceName string) g
 				{
 					Expr:         exp,
 					Format:       "heatmap",
-					LegendFormat: "{{le}}",
-					RefID:        "A",
+					LegendFormat: legendFormat,
+					RefID:        refId,
 				},
 			},
 			FieldConfig: struct {
@@ -297,8 +297,8 @@ func pannelFactory(panelId int, title, exp, pannelType, dataSourceName string) g
 				{
 					Expr:         exp,
 					Format:       "heatmap",
-					LegendFormat: "{{le}}",
-					RefID:        "A",
+					LegendFormat: legendFormat,
+					RefID:        refId,
 				},
 			},
 			FieldConfig: struct {

@@ -18,3 +18,66 @@ spec:
         legend: '{{code}}: {{name}}'
         ref: A
       type: graph
+    - title: 股票价格
+      datasource: Prometheus
+      targets:
+      - query: stock_current_gauge{code="sh600198"}
+        legend: '{{code}}: {{name}}'
+        ref: A
+      type: gauge  
+    - title: 今日涨跌幅
+      datasource: Prometheus
+      targets:
+      - query: stock_increase_gauge{code="sh600198"}
+        legend: '{{code}}: {{name}}'
+        ref: A
+      type: graph     
+    - title: 今日涨跌幅
+      datasource: Prometheus
+      targets:
+      - query: stock_increase_gauge{code="sh600198"}
+        legend: '{{code}}: {{name}}'
+        ref: A
+      type: gauge    
+    - title: 交易量变化趋势
+      datasource: Prometheus
+      targets:
+      - query: irate(stock_trade_volume_total{code="sh600198"}[10m])
+        legend: '{{code}}: {{name}}'
+        ref: A
+      type: graph    
+    - title: 委比
+      datasource: Prometheus
+      targets:
+      - query: stock_weibi_gauge{code="sh600198"}
+        legend: '{{code}}: {{name}}'
+        ref: A
+      type: graph   
+    - title: 买一至买三之和
+      datasource: Prometheus
+      targets:
+      - query: stock_last_buy_3_gauge{code="sh600198"}
+        legend: '{{code}}: {{name}}'
+        ref: A
+      type: graph     
+    - title: 卖一至卖三之和
+      datasource: Prometheus
+      targets:
+      - query: stock_last_sell_3_gauge{code="sh600198"}
+        legend: '{{code}}: {{name}}'
+        ref: A
+      type: graph   
+    - title: 七日内相对于最大值跌幅
+      datasource: Prometheus
+      targets:
+      - query: ((stock_current_gauge{code="sh600198"}-max_over_time(stock_current_gauge{code="sh600198"}[7d]))/max_over_time(stock_current_gauge{code="sh600198"}[7d]))*100
+        legend: '{{code}}: {{name}}'
+        ref: A
+      type: graph  
+    - title: 七日内相对于最小值涨幅
+      datasource: Prometheus
+      targets:
+      - query: ((stock_current_gauge{code="sh600198"}-min_over_time(stock_current_gauge{code="sh600198"}[7d]))/min_over_time(stock_current_gauge{code="sh600198"}[7d]))*100
+        legend: '{{code}}: {{name}}'
+        ref: A
+      type: graph                                   
