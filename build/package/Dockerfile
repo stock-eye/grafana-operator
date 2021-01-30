@@ -22,6 +22,9 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o manager 
 # Use distroless as minimal base image to package the manager binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM alpine:3.11
+RUN apk --no-cache add tzdata  && \
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    echo "Asia/Shanghai" > /etc/timezone
 WORKDIR /
 COPY --from=builder /workspace/manager .
 COPY config.yaml config.yaml
