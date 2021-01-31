@@ -80,14 +80,16 @@ func (r *GrafanaDashboardReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 	}
 
 	// GrafanaDashboard update
-	r.Log.V(1).Info("Updating GrafanaDashboard")
-	err = r.Grafana.UpsertDashboard(gd)
-	if err != nil {
-		r.updateStatus(gd, "Failed")
-		return ctrl.Result{}, err
+	if gd.Status.Status != "Successful" {
+		r.Log.V(1).Info("Updating GrafanaDashboard")
+		err = r.Grafana.UpsertDashboard(gd)
+		if err != nil {
+			r.updateStatus(gd, "Failed")
+			return ctrl.Result{}, err
+		}
+		r.Log.V(1).Info("GrafanaDashboard updated")
+		r.updateStatus(gd, "Successful")
 	}
-	r.Log.V(1).Info("GrafanaDashboard updated")
-	r.updateStatus(gd, "Successful")
 
 	return ctrl.Result{}, nil
 }
