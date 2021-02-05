@@ -7,6 +7,8 @@ import (
 	log "k8s.io/klog"
 )
 
+var folderMap map[string]int
+
 type Grafana struct {
 	client gografana.GrafanaClienter
 }
@@ -21,6 +23,10 @@ func NewGrafana(version, host, adminUser, adminPass, token string) (*Grafana, er
 	client, err := gografana.GetClientByVersion(version, host, auth)
 	if err != nil {
 		return nil, err
+	}
+	fs, err := client.GetAllFolders()
+	for _, f := range fs {
+		folderMap[f.Title] = f.ID
 	}
 	return &Grafana{
 		client: client,
@@ -43,23 +49,17 @@ func (grafana *Grafana) DeleteDashboard(dashboardName string) error {
 }
 
 func (grafana *Grafana) UpsertDashboard(gd *grafanav1.GrafanaDashboard) error {
-	fs, err := grafana.client.GetAllFolders()
-	if err != nil {
-		return err
-	}
-	//find all folders.
-	var folderId int
-	for i := 0; i < len(fs); i++ {
-		if fs[i].Title == gd.Spec.Folder {
-			folderId = fs[i].ID
-		}
-	}
+	//find folder.
+	folderId := folderMap[gd.Spec.Folder]
+
 	//create new folder
 	if folderId == 0 {
+		logrus.Printf("Create Folder: %s", gd.Spec.Folder)
 		fId, _, err := grafana.client.EnsureFolderExists(-1, "", gd.Spec.Folder)
 		if err != nil {
 			return err
 		}
+		folderMap[gd.Spec.Folder] = fId
 		folderId = fId
 	}
 	rows := []*gografana.Row{}
