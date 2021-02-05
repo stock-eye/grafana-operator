@@ -25,6 +25,7 @@ func NewGrafana(version, host, adminUser, adminPass, token string) (*Grafana, er
 		return nil, err
 	}
 	fs, err := client.GetAllFolders()
+	folderMap = make(map[string]int, 0)
 	for _, f := range fs {
 		folderMap[f.Title] = f.ID
 	}
@@ -54,6 +55,7 @@ func (grafana *Grafana) UpsertDashboard(gd *grafanav1.GrafanaDashboard) error {
 
 	//create new folder
 	if folderId == 0 {
+		logrus.Println(folderMap)
 		logrus.Printf("Create Folder: %s", gd.Spec.Folder)
 		fId, _, err := grafana.client.EnsureFolderExists(-1, "", gd.Spec.Folder)
 		if err != nil {

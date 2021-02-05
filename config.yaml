@@ -1,5 +1,5 @@
 version: 5.x
-host: http://172.18.82.221:3000
-adminUser: ""
-adminPass: ""
-token: eyJrIjoiSEZhQm5HQ0ZqdHJTa0hnMGRYQTNnNHhTWWl4Z2xQWXMiLCJuIjoiZGFyayIsImlkIjoxfQ==
+host: http://192.168.1.24:30000
+adminUser: "linclaus"
+adminPass: "GS2018niu!888"
+token: ""
