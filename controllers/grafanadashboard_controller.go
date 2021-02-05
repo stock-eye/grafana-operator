@@ -102,7 +102,7 @@ func (r *GrafanaDashboardReconciler) updateStatus(gd *grafanav1.GrafanaDashboard
 			gd.Status.RetryTimes = rty + 1
 		}
 	}
-	r.Status().Update(context.Background(), gd)
+	r.Update(context.Background(), gd)
 }
 
 func removeString(slice []string, s string) (result []string) {

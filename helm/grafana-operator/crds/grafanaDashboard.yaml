@@ -13,8 +13,6 @@ spec:
     plural: grafanadashboards
     singular: grafanadashboard
   scope: Namespaced
-  subresources:
-    status: {}
   validation:
     openAPIV3Schema:
       description: GrafanaDashboard is the Schema for the grafanadashboards API

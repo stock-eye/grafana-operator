@@ -63,7 +63,6 @@ type GrafanaDashboardStatus struct {
 }
 
 // +kubebuilder:object:root=true
-// +kubebuilder:subresource:status
 
 // GrafanaDashboard is the Schema for the grafanadashboards API
 type GrafanaDashboard struct {
