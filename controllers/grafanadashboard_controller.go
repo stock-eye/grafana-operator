@@ -81,7 +81,7 @@ func (r *GrafanaDashboardReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 	}
 
 	// GrafanaDashboard update
-	if viper.GetString("FORCE_CREATE") == "true" && gd.Status.Status != "Successful" {
+	if viper.GetString("FORCE_CREATE") == "true" || gd.Status.Status != "Successful" {
 		r.Log.V(1).Info("Updating GrafanaDashboard")
 		err = r.Grafana.UpsertDashboard(gd)
 		if err != nil {
