@@ -26,6 +26,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	grafanav1 "github.com/linclaus/grafana-operator/api/v1"
+	"github.com/spf13/viper"
 )
 
 var LOG_FINALIZER = "grafanaDashboard"
@@ -80,7 +81,7 @@ func (r *GrafanaDashboardReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 	}
 
 	// GrafanaDashboard update
-	if gd.Status.Status != "Successful" {
+	if viper.GetString("FORCE_CREATE") == "true" && gd.Status.Status != "Successful" {
 		r.Log.V(1).Info("Updating GrafanaDashboard")
 		err = r.Grafana.UpsertDashboard(gd)
 		if err != nil {
