@@ -1,6 +1,8 @@
 package grafana
 
 import (
+	"strings"
+
 	grafanav1 "github.com/linclaus/grafana-operator/api/v1"
 	"github.com/linclaus/grafana-operator/pkg/gografana"
 	"github.com/sirupsen/logrus"
@@ -59,7 +61,14 @@ func (grafana *Grafana) UpsertDashboard(gd *grafanav1.GrafanaDashboard) error {
 		logrus.Printf("Create Folder: %s", gd.Spec.Folder)
 		fId, _, err := grafana.client.EnsureFolderExists(-1, "", gd.Spec.Folder)
 		if err != nil {
-			return err
+			if !strings.Contains(err.Error(), "already exists") {
+				return err
+			} else {
+				fs, _ := grafana.client.GetAllFolders()
+				for _, f := range fs {
+					folderMap[f.Title] = f.ID
+				}
+			}
 		}
 		folderMap[gd.Spec.Folder] = fId
 		folderId = fId
